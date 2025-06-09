@@ -3,22 +3,14 @@
 
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
-void setup() {
+
+void sensorMovimento() {
   Serial.begin(9600);
-  Wire.begin(); // Usa os pinos padrão do ESP32: GPIO21 (SDA), GPIO22 (SCL)
+  Wire.begin();
 
-  // Inicializa o sensor
-  if (!lox.begin()) {
-    Serial.println("VL53L0X não encontrado. Verifique as conexões.");
-    while (1);
-  }
-  Serial.println("VL53L0X iniciado com sucesso.");
-}
-
-void loop() {
   VL53L0X_RangingMeasurementData_t measure;
 
-  lox.rangingTest(&measure, false); // false = sem debug na serial
+  lox.rangingTest(&measure, false); 
   int distancia = measure.RangeMilliMeter/10;
 
   /*if (measure.RangeStatus != 4) {  // 4 = erro
