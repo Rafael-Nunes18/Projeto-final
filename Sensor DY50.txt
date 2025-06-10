@@ -1,0 +1,418 @@
+#include <Adafruit_Fingerprint.h>
+
+// Defina os pinos RX e TX do ESP32 que serão conectados ao sensor.
+// Use a UART2 do ESP32.
+#define ImpressãoDigital_RX_PIN 16
+#define ImpressãoDigital_TX_PIN 17
+
+HardwareSerial minhaSerial(2);
+
+// Crie o objeto do sensor de impressão digital, passando a serial e a senha.
+// A senha padrão para a maioria dos sensores é 0x00000000.
+Adafruit_Fingerprint finger = Adafruit_Fingerprint(&minhaSerial, 0x00000000);
+
+
+
+
+void printMenu();
+void enrollFingerprint();
+void verifyFingerprint();
+void deleteFingerprint();
+void getFingerprintCount();
+
+void setup()
+{
+
+  Serial.begin(9600);
+  while (!Serial)
+  { 
+    delay(100);
+  }
+  Serial.println("Iniciando o sistema de impressão digital...");
+
+ 
+  // A baud rate padrão para muitos sensores é 57600.
+  finger.begin(57600);
+
+
+  if (finger.verifyPassword())
+  {
+    Serial.println("Sensor de impressão digital encontrado!");
+  }
+  else
+  {
+    Serial.println("Sensor de impressão digital não encontrado :( ");
+    Serial.println("Verifique as conexões e a baud rate.");
+    while (1)
+    { // Trava o programa se o sensor não for encontrado
+      delay(1);
+    }
+  }
+
+  finger.getParameters();
+  Serial.print("Capacidade de armazenamento: ");
+  Serial.println(finger.capacity);
+  Serial.print("Nivel de segurança: ");
+  Serial.println(finger.security_level);
+
+  Serial.println("Sistema pronto! Escolha uma opção:");
+  printMenu();
+}
+
+void loop()
+{
+  if (Serial.available())
+  {
+    char escolha = Serial.read();
+    switch (escolha)
+    {
+    case '1':
+      enrollFingerprint();
+      break;
+    case '2':
+      verifyFingerprint();
+      break;
+    case '3':
+      deleteFingerprint();
+      break;
+    case '4':
+      getFingerprintCount();
+      break;
+    case 'm':
+      printMenu();
+      break;
+    default:
+      Serial.println("Opção invalida. Digite 'm' para o menu.");
+      break;
+    }
+  }
+}
+
+void printMenu()
+{
+  Serial.println("----------------------------------------");
+  Serial.println("1. Cadastrar nova impressão digital");
+  Serial.println("2. Verificar impressão digital");
+  Serial.println("3. Excluir impressão digital");
+  Serial.println("4. Contar impressões digitais cadastradas");
+  Serial.println("m. Mostrar menu novamente");
+  Serial.println("----------------------------------------");
+  Serial.print("Sua escolha: ");
+}
+
+
+
+
+
+//****Função para cadastrar uma nova impressão digital*****
+void enrollFingerprint()
+{
+  int id;
+  Serial.print("Digite o ID para a nova impressão digital: ");
+  Serial.print(finger.capacity);
+  while (!Serial.available())
+    delay(100);
+  id = Serial.parseInt();
+  Serial.readStringUntil('\n'); // Limpa o buffer serial
+
+  if (id < 1 || id > finger.capacity)
+  {
+    Serial.println("ID invalido. Tente novamente: ");
+    return;
+  }
+
+  Serial.println("Coloque o dedo no sensor para cadastrar");
+  Serial.println("Aguardando o dedo...");
+
+  uint8_t p = -1;
+  while (p != FINGERPRINT_OK)
+  {
+    p = finger.getImage();
+    switch (p)
+    {
+    case FINGERPRINT_OK:
+      Serial.println("Imagem capturada!");
+      break;
+    case FINGERPRINT_NOFINGER:
+      Serial.println("Nenhum dedo detectado ): "); 
+      break;
+    case FINGERPRINT_PACKETRECIEVEERR:
+      Serial.println("Erro de comunicação ): ");
+      return;
+    case FINGERPRINT_IMAGEFAIL:
+      Serial.println("Erro na captura da imagem ): ");
+      return;
+    default:
+      Serial.print("Erro desconhecido ): ");
+      Serial.println(p);
+      return;
+    }
+  }
+
+
+  p = finger.image2Tz(1);
+  switch (p)
+  {
+  case FINGERPRINT_OK:
+    Serial.println("Imagem convertida para template 1.");
+    break;
+  case FINGERPRINT_IMAGEMESS:
+    Serial.println("Imagem muito suja. Tente novamente.");
+    return;
+  case FINGERPRINT_FEATUREFAIL:
+    Serial.println("Não foi possivel extrair caracteristicas. Tente novamente.");
+    return;
+  case FINGERPRINT_INVALIDIMAGE:
+    Serial.println("Imagem invalida. Tente novamente.");
+    return;
+  default:
+    Serial.print("Erro image2Tz(1): ");
+    Serial.println(p);
+    return;
+  }
+
+  Serial.println("Retire o dedo do sensor.");
+  delay(2000);
+  p = -1;
+  while (p != FINGERPRINT_NOFINGER)
+  {
+    p = finger.getImage();
+    delay(100);
+  }
+  Serial.println("Dedo removido.");
+
+  Serial.println("Coloque o MESMO dedo novamente no sensor...");
+  Serial.println("Aguardando o dedo...");
+
+  p = -1;
+  while (p != FINGERPRINT_OK)
+  {
+    p = finger.getImage();
+    switch (p)
+    {
+    case FINGERPRINT_OK:
+      Serial.println("Segunda imagem capturada.");
+      break;
+    case FINGERPRINT_NOFINGER:
+      Serial.println("Nenhum dedo detectado.");
+      break;
+    case FINGERPRINT_PACKETRECIEVEERR:
+      Serial.println("Erro de comunicação ): ");
+      return;
+    case FINGERPRINT_IMAGEFAIL:
+      Serial.println("Erro na captura da segunda imagem ): ");
+      return;
+    default:
+      Serial.print("Erro desconhecido ): ");
+      Serial.println(p);
+      return;
+    }
+  }
+
+  p = finger.image2Tz(2);
+  switch (p)
+  {
+  case FINGERPRINT_OK:
+    Serial.println("Segunda imagem convertida para template 2.");
+    break;
+  case FINGERPRINT_IMAGEMESS:
+    Serial.println("Segunda imagem muito suja! Tente novamente: ");
+    return;
+  case FINGERPRINT_FEATUREFAIL:
+    Serial.println("Não foi possivel extrair caracteristicas da segunda imagem. Tente novamente: ");
+    return;
+  case FINGERPRINT_IMAGEFAIL:
+    Serial.println("Segunda imagem invalida. Tente novamente: ");
+    return;
+  default:
+    Serial.print("Erro image2Tz(2): ");
+    Serial.println(p);
+    return;
+  }
+
+  p = finger.createModel();
+  switch (p)
+  {
+  case FINGERPRINT_OK:
+    Serial.println("Modelos combinados.");
+    break;
+  case FINGERPRINT_ENROLLMISMATCH: 
+    Serial.println("As impressões digitais não correspondem. Tente novamente: ");
+    return;
+  default:
+    Serial.print("Erro na hora de criar o modelo ): ");
+    Serial.println(p);
+    return;
+  }
+
+  
+  p = finger.storeModel(id);
+  switch (p)
+  {
+  case FINGERPRINT_OK:
+    Serial.print("Impressão digital cadastrada com sucesso no ID: ");
+    Serial.println(id);
+    break;
+  case FINGERPRINT_BADLOCATION:
+    Serial.println("ID de localização invalido ): ");
+    return;
+  case FINGERPRINT_FLASHERR:
+    Serial.println("Erro de escrita na flash ): ");
+    return;
+  default:
+    Serial.print("Erro storeModel ): ");
+    Serial.println(p);
+    return;
+  }
+  Serial.println("Sistema pronto. Escolha uma opção:");
+  printMenu();
+}
+
+
+
+
+
+//****Função para verificar uma impressão digital****
+void verifyFingerprint()
+{
+  Serial.println("Coloque o dedo no sensor para verificar...");
+  Serial.println("Aguardando o dedo...");
+
+  uint8_t p = -1;
+  while (p != FINGERPRINT_OK)
+  {
+    p = finger.getImage();
+    switch (p)
+    {
+    case FINGERPRINT_OK:
+      Serial.println("Imagem capturada.");
+      break;
+    case FINGERPRINT_NOFINGER:
+      Serial.println("Nenhum dedo detectado.");
+      break;
+    case FINGERPRINT_PACKETRECIEVEERR:
+      Serial.println("Erro de comunicacao.");
+      return;
+    case FINGERPRINT_IMAGEFAIL:
+      Serial.println("Erro na captura da imagem.");
+      return;
+    default:
+      Serial.print("Erro desconhecido: ");
+      Serial.println(p);
+      return;
+    }
+  }
+
+
+  p = finger.image2Tz(1);
+  switch (p)
+  {
+  case FINGERPRINT_OK:
+    Serial.println("Imagem convertida para template.");
+    break;
+  case FINGERPRINT_IMAGEMESS:
+    Serial.println("Imagem muito suja. Tente novamente.");
+    return;
+  case FINGERPRINT_FEATUREFAIL:
+    Serial.println("Nao foi possivel extrair caracteristicas. Tente novamente.");
+    return;
+  case FINGERPRINT_IMAGEFAIL:
+    Serial.println("Imagem invalida. Tente novamente.");
+    return;
+  default:
+    Serial.print("Erro image2Tz(1): ");
+    Serial.println(p);
+    return;
+  }
+
+  p = finger.fingerFastSearch();
+  switch (p)
+  {
+  case FINGERPRINT_OK:
+    Serial.println("Impressao digital encontrada!");
+    Serial.print("ID: ");
+    Serial.print(finger.fingerID);
+    Serial.print(" | Confianca: ");
+    Serial.println(finger.confidence);
+    break;
+  case FINGERPRINT_NOTFOUND:
+    Serial.println("Impressão digital não encontrada no banco de dados ): ");
+    break;
+  case FINGERPRINT_PACKETRECIEVEERR:
+    Serial.println("Erro de comunicação ): ");
+    return;
+  default:
+    Serial.print("Erro na busca rapida ): ");
+    Serial.println(p);
+    return;
+  }
+  Serial.println("Sistema pronto! Escolha uma opção:");
+ printMenu();
+}
+
+
+
+
+
+//***Função para excluir uma impressão digital******
+void deleteFingerprint()
+{
+  int id;
+  Serial.print("Digite o ID da impressão digital a ser excluida: ");
+  while (!Serial.available())
+    delay(100);
+  id = Serial.parseInt();
+  Serial.readStringUntil('\n'); 
+
+  if (id < 1 || id > finger.capacity)
+  {
+    Serial.println("ID invalido. Tente novamente: ");
+    return;
+  }
+
+  Serial.print("Excluindo impressão digital com ID. ");
+  Serial.println(id);
+
+  uint8_t p = finger.deleteModel(id);
+  switch (p)
+  {
+  case FINGERPRINT_OK:
+    Serial.println("Impressão digital excluida com sucesso!");
+    break;
+  case FINGERPRINT_BADLOCATION:
+    Serial.println("ID de localização invalido.");
+    return;
+  case FINGERPRINT_FLASHERR:
+    Serial.println("Erro de escrita na flash ): ");
+    return;
+  default:
+    Serial.print("Erro em deletar modelo ): ");
+    Serial.println(p);
+    return;
+  }
+  Serial.println("Sistema pronto! Escolha uma opção:");
+ printMenu();
+}
+
+
+
+
+
+//****Função para contar o número de impressóes digitais cadastradas****
+void getFingerprintCount()
+{
+  uint8_t p  = finger.getTemplateCount();
+  switch (p)
+  {
+  case FINGERPRINT_OK:
+    Serial.print("Número de impressoes digitais cadastradas: ");
+    Serial.println(finger.templateCount);
+    break;
+  default:
+    Serial.print("Erro na contagem de impressões ): ");
+    Serial.println(p);
+    break;
+  }
+  Serial.println("Sistema pronto! Escolha uma opção:");
+  printMenu();
+}
