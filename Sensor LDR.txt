@@ -13,12 +13,12 @@ void loop() {
   int sensorLDR = analogRead(4);
   Serial.println(sensorLDR);
   delay(2000);
-  if(sensorLDR>50){
-    digitalWrite(pinLed, LOW);
-  }
-  else{
+  if(sensorLDR>50)
+  digitalWrite(pinLed, LOW);
+  
+  else
    digitalWrite(pinLed, HIGH);
-  }
+  
 
 
 }
