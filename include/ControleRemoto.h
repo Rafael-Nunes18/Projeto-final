@@ -1,6 +1,11 @@
-#ifndef CONTROLE_REMOTO_H
-#define CONTROLE_REMOTO_H
+#ifndef CONTROLLEREMOTO_H
+#define CONTROLLEREMOTO_H
 
-void Controller (void);
+#include <Arduino.h>
+
+#define botao 0
+
+void Controller();
+void initControleRemoto();
 
 #endif
