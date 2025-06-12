@@ -10,6 +10,8 @@
             "includePath": [
                 "C:/Users/43159446883/Desktop/sala cofre/Projeto-final/include",
                 "C:/Users/43159446883/Desktop/sala cofre/Projeto-final/src",
+                "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                "C:/Users/43159446883/Desktop/sala cofre/Projeto-final/.pio/libdeps/esp32dev/PubSubClient/src",
                 "C:/Users/43159446883/Desktop/sala cofre/Projeto-final/.pio/libdeps/esp32dev/ArduinoJson/src",
                 "C:/Users/43159446883/Desktop/sala cofre/Projeto-final/.pio/libdeps/esp32dev/Adafruit_VL53L0X/src",
                 "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
@@ -241,7 +243,6 @@
                 "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/USB/src",
                 "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/Update/src",
                 "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src",
-                "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                 "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                 "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/WiFiProv/src",
                 ""
@@ -251,6 +252,8 @@
                 "path": [
                     "C:/Users/43159446883/Desktop/sala cofre/Projeto-final/include",
                     "C:/Users/43159446883/Desktop/sala cofre/Projeto-final/src",
+                    "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                    "C:/Users/43159446883/Desktop/sala cofre/Projeto-final/.pio/libdeps/esp32dev/PubSubClient/src",
                     "C:/Users/43159446883/Desktop/sala cofre/Projeto-final/.pio/libdeps/esp32dev/ArduinoJson/src",
                     "C:/Users/43159446883/Desktop/sala cofre/Projeto-final/.pio/libdeps/esp32dev/Adafruit_VL53L0X/src",
                     "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
@@ -482,7 +485,6 @@
                     "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/USB/src",
                     "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/Update/src",
                     "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src",
-                    "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                     "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                     "C:/Users/43159446883/.platformio/packages/framework-arduinoespressif32/libraries/WiFiProv/src",
                     ""
