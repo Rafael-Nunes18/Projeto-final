@@ -5,22 +5,33 @@
 Bounce botaoDebounce = Bounce();
 bool ligado = false;
 
-void initControleRemoto() {
-    pinMode(botao, INPUT_PULLUP);      
-    botaoDebounce.attach(botao);       
-    botaoDebounce.interval(25);        
+void initControleRemoto()
+{
+    pinMode(botao, INPUT_PULLUP);
+    pinMode(pinLed, OUTPUT);
+    botaoDebounce.attach(botao);
+    botaoDebounce.interval(25);
 }
 
 void Controller()
 {
-    botaoDebounce.update(); // Atualiza o estado do botão
+    botaoDebounce.update();
 
-    if (botaoDebounce.fell()) { // Detecta quando o botão foi pressionado
+    if (botaoDebounce.fell())
+    {
         ligado = !ligado;
 
         if (ligado)
-            Serial.println("Ligado!");
+        {
+            digitalWrite(pinLed, HIGH);
+            Serial.println("Sistema Ativado!");
+            Serial.println("Portas Fechadas!");
+        }
         else
-            Serial.println("Desligado!");
+        {
+            digitalWrite(pinLed, LOW);
+            Serial.println("Sistema Desativado!");
+            Serial.println("Portas Abertas!");
+        }
     }
 }

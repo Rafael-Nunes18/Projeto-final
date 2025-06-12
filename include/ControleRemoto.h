@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #define botao 0
+#define pinLed 2
 
 void Controller();
 void initControleRemoto();
