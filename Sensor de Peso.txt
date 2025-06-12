@@ -1,0 +1,32 @@
+#include <Arduino.h>
+#include <HX711.h>
+
+const int LOADCELL_DOUT_PIN = 5;
+const int LOADCELL_SCK_PIN = 18;
+
+HX711 scale;
+
+// DECLARAÇÃO DE VARIÁVEIS
+float medida = 0;
+
+void setup() {
+  Serial.begin(9600);
+
+  scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN); // CONFIGURANDO OS PINOS DA BALANÇA
+  scale.set_scale(41795); // LIMPANDO O VALOR DA ESCALA
+
+  delay(2000);
+  scale.tare(); // ZERANDO A BALANÇA PARA DESCONSIDERAR A MASSA DA ESTRUTURA
+
+  Serial.println("Balança Zerada");
+}
+
+void loop() {
+
+  medida = scale.get_units(5); // SALVANDO NA VARIAVEL O VALOR DA MÉDIA DE 5 MEDIDAS
+  Serial.println(medida, 3); // ENVIANDO PARA MONITOR SERIAL A MEDIDA COM 3 CASAS DECIMAIS
+
+  scale.power_down(); // DESLIGANDO O SENSOR
+  delay(1000); // AGUARDA 1 SEGUNDO
+  scale.power_up(); // LIGANDO O SENSOR
+}
