@@ -23,10 +23,22 @@ void setup() {
 
 void loop() {
 
+  unsigned long int tempoAnterior;
+  static unsigned long int tempoAtual=millis();
+
   medida = scale.get_units(5); // SALVANDO NA VARIAVEL O VALOR DA MÉDIA DE 5 MEDIDAS
-  Serial.println(medida, 3); // ENVIANDO PARA MONITOR SERIAL A MEDIDA COM 3 CASAS DECIMAIS
+ 
+  if(medida<0)
+  {
+    medida=0;
+    Serial.println(medida,2);
+  }
+  else
+  {
+  Serial.println(medida, 2); // ENVIANDO PARA MONITOR SERIAL A MEDIDA COM 3 CASAS DECIMAIS
+  }
 
   scale.power_down(); // DESLIGANDO O SENSOR
-  delay(1000); // AGUARDA 1 SEGUNDO
+  delay(5000); // AGUARDA 5 SEGUNDOS
   scale.power_up(); // LIGANDO O SENSOR
 }
