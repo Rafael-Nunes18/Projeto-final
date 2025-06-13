@@ -6,6 +6,7 @@
 #define botao 0
 #define pinLed 2
 
+bool getLigado();
 void Controller();
 void initControleRemoto();
 

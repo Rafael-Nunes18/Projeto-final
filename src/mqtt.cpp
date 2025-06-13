@@ -5,6 +5,7 @@
 #include <ezTime.h>
 #include "internet.h"
 #include <LiquidCrystal_I2C.h>
+#include "ControleRemoto.h"
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -41,21 +42,29 @@ void testeconect()
     static unsigned long tempoAnterior = 0;
     unsigned long agora = millis();
 
-    bool teste = 0;
+    static bool sistemaLigado = 1;
 
     JsonDocument doc;
     String mensagem;
 
     if (agora - tempoAnterior > 3000)
     {
-        teste = !teste;
+        if (getLigado())
+        {
+            doc["Ligado"] = sistemaLigado;
 
-        doc["teste"] = teste;
+            serializeJson(doc, mensagem);
+            client.publish(mqtt_topic_pub, mensagem.c_str());
 
-        serializeJson(doc, mensagem);
-        client.publish(mqtt_topic_pub, mensagem.c_str());
+            tempoAnterior = agora;
+        } else if (!getLigado()){
+            doc["Desligado"] = !sistemaLigado;
 
-        tempoAnterior = agora;
+            serializeJson(doc, mensagem);
+            client.publish(mqtt_topic_pub, mensagem.c_str());
+
+            tempoAnterior = agora;
+        }
     }
 }
 

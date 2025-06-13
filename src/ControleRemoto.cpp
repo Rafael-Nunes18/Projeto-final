@@ -3,7 +3,7 @@
 #include <Bounce2.h>
 
 Bounce botaoDebounce = Bounce();
-bool ligado = false;
+static bool ligado = false;
 
 void initControleRemoto()
 {
@@ -21,7 +21,7 @@ void Controller()
     {
         ligado = !ligado;
 
-        if (ligado)
+        if (getLigado())
         {
             digitalWrite(pinLed, HIGH);
             Serial.println("Sistema Ativado!");
@@ -34,4 +34,8 @@ void Controller()
             Serial.println("Portas Abertas!");
         }
     }
+}
+
+bool getLigado(){
+    return ligado;
 }
