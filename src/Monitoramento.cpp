@@ -3,7 +3,7 @@
 #include <Wire.h>
 #include <Adafruit_VL53L0X.h>
 
-// --- PRESSÃO (HX711) ---
+//* --- PRESSÃO (HX711) ---
 const int LOADCELL_DOUT_PIN = 5;
 const int LOADCELL_SCK_PIN = 18;
 HX711 scale;
@@ -12,13 +12,13 @@ const float LIMIAR_PRESSAO = 5.0;
 const unsigned long INTERVALO_PRESSAO = 500;
 unsigned long ultimoMillisPressao = 0;
 
-// --- MOVIMENTO (VL53L0X) ---
+//* --- MOVIMENTO (VL53L0X) ---
 Adafruit_VL53L0X lox;
 bool alarmeSensorMovimento = false;
 const unsigned long INTERVALO_MOVIMENTO = 500;
 unsigned long ultimoMillisMovimento = 0;
 
-// --- LUZ (LDR) ---
+//* --- LUZ (LDR) ---
 const int pinSensorLuz = 4;
 bool alarmeSensorLuz = false;
 const int LIMIAR_LUZ = 300;
@@ -27,13 +27,13 @@ unsigned long ultimoMillisLuz = 0;
 
 void iniciarMonitoramento()
 {
-    // PRESSÃO
+    //* PRESSÃO
     scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
     scale.set_scale(41795);
     delay(2000);
     scale.tare();
 
-    // MOVIMENTO
+    //* MOVIMENTO
     Wire.begin();
     if (!lox.begin())
     {
@@ -42,7 +42,7 @@ void iniciarMonitoramento()
             ;
     }
 
-    // LUZ
+    //* LUZ
     pinMode(pinSensorLuz, INPUT);
 }
 
@@ -50,7 +50,7 @@ void atualizarMonitoramento()
 {
     unsigned long agora = millis();
 
-    // --- Sensor de Pressão ---
+    //* --- Sensor de Pressão ---
     if (agora - ultimoMillisPressao >= INTERVALO_PRESSAO)
     {
         ultimoMillisPressao = agora;
@@ -65,7 +65,7 @@ void atualizarMonitoramento()
         scale.power_up();
     }
 
-    // --- Sensor de Movimento ---
+    //* --- Sensor de Movimento ---
     if (agora - ultimoMillisMovimento >= INTERVALO_MOVIMENTO)
     {
         ultimoMillisMovimento = agora;
@@ -89,7 +89,7 @@ void atualizarMonitoramento()
         }
     }
 
-    // --- Sensor de Luz (LDR) ---
+    //* --- Sensor de Luz (LDR) ---
     if (agora - ultimoMillisLuz >= INTERVALO_LUZ)
     {
         ultimoMillisLuz = agora;
