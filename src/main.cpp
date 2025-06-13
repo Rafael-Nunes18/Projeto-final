@@ -1,10 +1,19 @@
-#include <Arduino.h>
-#include "sensorMovimento.h"
+#include "monitoramento.h"
 
-void setup() {
-  sensorMovimentoInit(); 
+void setup()
+{
+  Serial.begin(9600);
+  iniciarMonitoramento();
 }
 
-void loop() {
-  sensorMovimento();
+void loop()
+{
+  atualizarMonitoramento();
+
+  bool dispararAlarme = alarmeSensorPressao || alarmeSensorMovimento || alarmeSensorLuz;
+
+  if (dispararAlarme)
+  {
+    // Aciona o alarme
+  }
 }
